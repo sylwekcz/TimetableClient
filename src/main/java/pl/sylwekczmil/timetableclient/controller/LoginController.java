@@ -1,14 +1,12 @@
 package pl.sylwekczmil.timetableclient.controller;
 
 import java.io.IOException;
-import pl.sylwekczmil.timetableclient.resource.User;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -34,7 +32,6 @@ public class LoginController implements Initializable {
     private void handleButtonLoginAction(ActionEvent event) throws IOException {
 
         try {
-            System.out.println(txtUsername.getText());
             us.login(txtUsername.getText(), txtPassword.getText());
             Parent p = FXMLLoader.load(getClass().getResource("/fxml/Home.fxml"));
             Scene scene = new Scene(p);
