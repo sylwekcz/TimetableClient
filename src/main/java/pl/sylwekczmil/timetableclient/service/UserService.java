@@ -28,7 +28,7 @@ public class UserService {
     }
 
     public void login(String username, String password) throws WrongCredentialsException {
-        Credentials c = new Credentials("sylwek", "haslo123");
+        Credentials c = new Credentials(username, password);
         ClientResponse response = resource
                 .path("login")
                 .type(MediaType.APPLICATION_XML)
