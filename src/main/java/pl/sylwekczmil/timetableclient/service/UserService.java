@@ -15,6 +15,18 @@ public class UserService {
     String token;
     WebResource resource = Client.create().resource("http://localhost:8080/TimetableServer/webapi");
 
+    private static UserService instance = null;
+
+    protected UserService() {
+    }
+
+    public static UserService getInstance() {
+        if (instance == null) {
+            instance = new UserService();
+        }
+        return instance;
+    }
+
     public void login(String username, String password) throws WrongCredentialsException {
         Credentials c = new Credentials("sylwek", "haslo123");
         ClientResponse response = resource

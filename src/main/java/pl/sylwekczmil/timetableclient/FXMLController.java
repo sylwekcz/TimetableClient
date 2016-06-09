@@ -17,7 +17,7 @@ public class FXMLController implements Initializable {
     @FXML
     private Label label;
 
-    UserService us = new UserService();
+    UserService us = UserService.getInstance();
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
