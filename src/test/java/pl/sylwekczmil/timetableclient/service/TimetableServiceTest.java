@@ -39,14 +39,12 @@ public class TimetableServiceTest {
      */
     @org.junit.Test
     public void testGetTimetablesByUserId() {
-//        System.out.println("getTimetablesByUserId");
-//        Integer userId = 1;
-//        TimetableService instance = new TimetableService();
-//        List<Timetable> expResult = new ArrayList<Timetable>();
-//        List<Timetable> result = instance.getTimetablesByUserId(userId);
-//        assertEquals(expResult, result);
-//        // TODO review the generated test code and remove the default call to fail.
-//        fail("The test case is a prototype.");
+        System.out.println("getTimetablesByUserId");
+        Integer userId = 1;
+        TimetableService instance = new TimetableService();
+        List<Timetable> expResult = new ArrayList<Timetable>();
+        List<Timetable> result = instance.getTimetablesByUserId(userId);
+       // assertEquals(expResult, result);
     }
     
 }
