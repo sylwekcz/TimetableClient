@@ -1,5 +1,5 @@
 
-package pl.sylwekczmil.timetableclient.resource;
+package pl.sylwekczmil.timetableclient.model;
 
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;

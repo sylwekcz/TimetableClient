@@ -26,7 +26,7 @@ public class LoginController implements Initializable {
     @FXML
     private TextField txtPassword;
 
-    UserService us = UserService.getInstance();    
+    UserService us = new UserService();    
 
     @FXML
     private void handleButtonLoginAction(ActionEvent event) throws IOException {

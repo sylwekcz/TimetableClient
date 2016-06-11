@@ -4,28 +4,16 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import javax.ws.rs.core.MediaType;
-import pl.sylwekczmil.timetableclient.resource.Credentials;
-import pl.sylwekczmil.timetableclient.resource.User;
+import pl.sylwekczmil.timetableclient.model.Credentials;
+import pl.sylwekczmil.timetableclient.model.User;
 import pl.sylwekczmil.timetableclient.service.exceptions.NotLoggedInException;
 import pl.sylwekczmil.timetableclient.service.exceptions.WrongCredentialsException;
 
 public class UserService {
 
-    User currentUser;
-    String token;
+    static User currentUser;
+    static String token;
     WebResource resource = Client.create().resource("http://localhost:8080/TimetableServer/webapi");
-
-    private static UserService instance = null;
-
-    protected UserService() {
-    }
-
-    public static UserService getInstance() {
-        if (instance == null) {
-            instance = new UserService();
-        }
-        return instance;
-    }
 
     public void login(String username, String password) throws WrongCredentialsException {
         Credentials c = new Credentials(username, password);
