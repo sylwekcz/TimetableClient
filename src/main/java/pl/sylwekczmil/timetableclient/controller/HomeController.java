@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import pl.sylwekczmil.timetableclient.SceneChanger;
 import pl.sylwekczmil.timetableclient.model.User;
+import pl.sylwekczmil.timetableclient.service.TimetableService;
 import pl.sylwekczmil.timetableclient.service.UserService;
 import pl.sylwekczmil.timetableclient.service.exceptions.NotLoggedInException;
 
@@ -14,6 +15,7 @@ public class HomeController implements Initializable {
     
     User currentUser;
     UserService userService = new UserService();
+    TimetableService ts = new TimetableService();
     SceneChanger sceneChanger = SceneChanger.getInstance();
     
     @FXML
@@ -32,11 +34,7 @@ public class HomeController implements Initializable {
     
      @FXML
     private void click() {
-        try {
-            throw new NotLoggedInException();
-        } catch (NotLoggedInException ex) {
-            sceneChanger.goToLogin();
-        }
+        System.out.println(ts.getTimetablesByUserId(1).toString());
     }
     
 }
