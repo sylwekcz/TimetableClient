@@ -37,7 +37,7 @@ public class UserService {
         if (currentUser == null) {
             ClientResponse response = resource
                     .path("user")
-                    .path("1")
+                    .path("current")
                     .header("Authorization", token)
                     .accept(MediaType.APPLICATION_XML)
                     .get(ClientResponse.class);

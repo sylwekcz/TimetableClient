@@ -6,7 +6,7 @@ import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.WebResource;
 import java.util.List;
 import javax.ws.rs.core.MediaType;
-import pl.sylwekczmil.timetableclient.Timetable;
+import pl.sylwekczmil.timetableclient.model.Timetable;
 
 public class TimetableService {
 
@@ -19,7 +19,7 @@ public class TimetableService {
                 .path(userId.toString())
                 .path("timetable")
                 .accept(MediaType.APPLICATION_XML)
-//                .header("Authorization", us.getToken())
+                .header("Authorization", us.getToken())
                 .header("Authorization", "sylwek:t0kvcnneuo6op4324aboku9f91")
                 .get(ClientResponse.class);
         

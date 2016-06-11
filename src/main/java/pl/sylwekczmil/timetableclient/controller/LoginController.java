@@ -12,7 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import pl.sylwekczmil.timetableclient.Timetable;
+import pl.sylwekczmil.timetableclient.TimetableApp;
 import pl.sylwekczmil.timetableclient.service.UserService;
 import pl.sylwekczmil.timetableclient.service.exceptions.WrongCredentialsException;
 
@@ -35,7 +35,7 @@ public class LoginController implements Initializable {
             us.login(txtUsername.getText(), txtPassword.getText());
             Parent p = FXMLLoader.load(getClass().getResource("/fxml/Home.fxml"));
             Scene scene = new Scene(p);
-            Stage appStage = Timetable.getPrimaryStage();
+            Stage appStage = TimetableApp.getPrimaryStage();
             appStage.hide();
             appStage.setScene(scene);
             appStage.show();

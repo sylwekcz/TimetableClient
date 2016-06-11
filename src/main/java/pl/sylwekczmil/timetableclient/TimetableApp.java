@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import static javafx.application.Application.launch;
 
 
-public class Timetable extends Application {
+public class TimetableApp extends Application {
 
     private static Stage pStage;
     
@@ -35,7 +35,7 @@ public class Timetable extends Application {
     }
 
     private void setPrimaryStage(Stage pStage) {
-        Timetable.pStage = pStage;
+        this.pStage = pStage;
     }
     
     

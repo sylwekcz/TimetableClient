@@ -39,7 +39,7 @@ public class SceneChanger {
     }
 
     private void changeScene() {
-        Stage appStage = Timetable.getPrimaryStage();
+        Stage appStage = TimetableApp.getPrimaryStage();
         appStage.hide();
         appStage.setScene(currentScene);
         appStage.show();
