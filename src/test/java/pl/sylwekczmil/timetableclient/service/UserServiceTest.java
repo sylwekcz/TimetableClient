@@ -19,8 +19,7 @@ import pl.sylwekczmil.timetableclient.model.User;
  */
 public class UserServiceTest {
 
-    public UserServiceTest() {
-    }
+    UserService instance = UserService.getInstance();
 
     @BeforeClass
     public static void setUpClass() {
@@ -38,26 +37,20 @@ public class UserServiceTest {
     public void tearDown() {
     }
 
-    /**
-     * Test of login method, of class UserService.
-     */
+    
     @Test
     public void testLogin() throws Exception {
 
-        UserService instance = new UserService();
         System.out.println("login");
         String username = "sylwek";
         String password = "haslo123";
         instance.login(username, password);
     }
 
-    /**
-     * Test of getCurrentUser method, of class UserService.
-     */
+   
     @Test
     public void testGetCurrentUser() throws Exception {
 
-        UserService instance = new UserService();
         System.out.println("getCurrentUser");
         testLogin();
         User expResult = new User(1, "sylwek", null);
@@ -65,17 +58,15 @@ public class UserServiceTest {
         assertEquals(expResult, result);
     }
 
-    /**
-     * Test of getToken method, of class UserService.
-     */
+    
     @Test
     public void testGetToken() throws Exception {
-
-        UserService instance = new UserService();
+        
         System.out.println("getToken");
-        String expResult = null;
+        String expResult = instance.getToken();
+        testLogin();
         String result = instance.getToken();
-        assertEquals(expResult, result);
+        assertNotEquals(expResult, result);
     }
 
 }

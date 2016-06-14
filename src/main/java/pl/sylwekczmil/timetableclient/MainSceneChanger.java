@@ -9,18 +9,18 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class SceneChanger {
+public class MainSceneChanger {
 
     Scene currentScene;
 
-    private static SceneChanger instance = null;
+    private static MainSceneChanger instance = null;
 
-    protected SceneChanger() {
+    protected MainSceneChanger() {
     }
 
-    public static SceneChanger getInstance() {
+    public static MainSceneChanger getInstance() {
         if (instance == null) {
-            instance = new SceneChanger();
+            instance = new MainSceneChanger();
         }
         return instance;
     }
@@ -31,7 +31,7 @@ public class SceneChanger {
             currentScene = new Scene(p);
             Alert alert = new Alert(AlertType.WARNING);
             alert.initStyle(StageStyle.UTILITY);
-            alert.setHeaderText("You are not logged in, or your token expired!");   
+            alert.setHeaderText("You are not logged in, or your token expired!");
             alert.showAndWait();
             changeScene();
         } catch (IOException e) {
@@ -39,10 +39,13 @@ public class SceneChanger {
     }
 
     private void changeScene() {
-        Stage appStage = TimetableApp.getPrimaryStage();
+        Stage appStage = getPrimaryStage();
         appStage.hide();
         appStage.setScene(currentScene);
         appStage.show();
     }
 
+    public Stage getPrimaryStage() {
+        return TimetableApp.getPrimaryStage();
+    }
 }

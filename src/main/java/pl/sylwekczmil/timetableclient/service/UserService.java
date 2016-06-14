@@ -11,9 +11,21 @@ import pl.sylwekczmil.timetableclient.service.exceptions.WrongCredentialsExcepti
 
 public class UserService {
 
-    static User currentUser;
-    static String token;
+    private User currentUser;
+    private String token;
     WebResource resource = Client.create().resource("http://localhost:8080/TimetableServer/webapi");
+
+    private static UserService instance = null;
+
+    private UserService() {
+    }
+
+    public static UserService getInstance() {
+        if (instance == null) {
+            instance = new UserService();
+        }
+        return instance;
+    }
 
     public void login(String username, String password) throws WrongCredentialsException {
         Credentials c = new Credentials(username, password);

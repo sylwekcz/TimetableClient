@@ -3,6 +3,8 @@ package pl.sylwekczmil.timetableclient.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -18,6 +20,12 @@ import pl.sylwekczmil.timetableclient.service.exceptions.WrongCredentialsExcepti
 
 public class LoginController implements Initializable {
 
+    
+    private UserService us  = UserService.getInstance();
+
+     
+    
+    
     @FXML
     private Label label;
 
@@ -25,8 +33,7 @@ public class LoginController implements Initializable {
     private TextField txtUsername;
     @FXML
     private TextField txtPassword;
-
-    UserService us = new UserService();    
+     
 
     @FXML
     private void handleButtonLoginAction(ActionEvent event) throws IOException {
@@ -48,7 +55,12 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        
+        
+        //TODO REMOVE ALL
+        txtUsername.setText("sylwek");
+        txtPassword.setText("haslo123");
+        
     }
 
 }

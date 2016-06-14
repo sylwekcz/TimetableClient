@@ -7,25 +7,45 @@ import com.sun.jersey.api.client.WebResource;
 import java.util.List;
 import javax.ws.rs.core.MediaType;
 import pl.sylwekczmil.timetableclient.model.Timetable;
+import pl.sylwekczmil.timetableclient.service.exceptions.NotLoggedInException;
 
 public class TimetableService {
 
-    UserService us = new UserService();
+    UserService us = UserService.getInstance(); 
     WebResource resource = Client.create().resource("http://localhost:8080/TimetableServer/webapi");
 
-    public List<Timetable> getTimetablesByUserId(Integer userId) {
+    private static TimetableService instance = null;
+
+    private TimetableService() {
+    }
+
+    public static TimetableService getInstance() {
+        if (instance == null) {
+            instance = new TimetableService();
+        }
+        return instance;
+    }
+
+    public List<Timetable> getTimetablesByUserId(Integer userId) throws NotLoggedInException {
         ClientResponse response = resource
                 .path("user")
                 .path(userId.toString())
                 .path("timetable")
                 .accept(MediaType.APPLICATION_XML)
                 .header("Authorization", us.getToken())
-                .header("Authorization", "sylwek:t0kvcnneuo6op4324aboku9f91")
                 .get(ClientResponse.class);
+
+         if (response.getStatus() != 200) {
+                if (response.getStatus() == 401) {
+                    throw new NotLoggedInException();
+                } else {
+                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+                }
+        }
         
-        return response.getEntity(new GenericType<List<Timetable>>() {});
-        
-        
+        return response.getEntity(new GenericType<List<Timetable>>() {
+        });
+
     }
 
 }
