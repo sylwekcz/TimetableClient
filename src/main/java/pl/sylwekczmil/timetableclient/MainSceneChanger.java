@@ -51,7 +51,7 @@ public class MainSceneChanger {
 
     private void changeScene() {
         Stage appStage = getPrimaryStage();
-        appStage.hide();
+        appStage.close();
         appStage.setScene(currentScene);
         appStage.show();
     }

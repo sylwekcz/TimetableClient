@@ -62,29 +62,19 @@ public class TimetableService {
         }
     }
 
-    public void removeTimetable(String timetableName) throws NotLoggedInException, NotModifiedException {
+    public void removeTimetable(int timetableId) throws NotLoggedInException, NotModifiedException {
 
-        List<Timetable> timetables = getTimetablesByUserId(us.getCurrentUser().getIdUser());
-        long timetableId = -1;
-        for (Timetable t : timetables) {
-            if (t.getName().equals(timetableName)) {
-                timetableId = t.getIdTimetable();
+        ClientResponse response = resource
+                .path("timetable")
+                .path("" + timetableId)
+                .delete(ClientResponse.class);
+        if (response.getStatus() != 200) {
+            if (response.getStatus() == 401) {
+                throw new NotLoggedInException();
+            } else {
+                throw new NotModifiedException();
             }
         }
-        if (timetableId != -1) {
-            ClientResponse response = resource
-                    .path("timetable")
-                    .path(""+timetableId)
-                    .delete(ClientResponse.class);
-            if (response.getStatus() != 200) {
-                if (response.getStatus() == 401) {
-                    throw new NotLoggedInException();
-                } else {
-                    throw new NotModifiedException();
-                }
-            }
-        } 
-
     }
 
 }

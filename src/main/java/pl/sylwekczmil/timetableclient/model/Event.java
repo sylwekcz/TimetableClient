@@ -103,7 +103,7 @@ public class Event implements Serializable {
 
     @Override
     public String toString() {
-        return "pl.sylwekczmil.timetableserver.Event[ idEvent=" + idEvent + " ]";
+        return name;
     }
     
 }

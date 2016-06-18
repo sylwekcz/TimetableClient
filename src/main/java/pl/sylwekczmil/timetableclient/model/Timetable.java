@@ -92,7 +92,7 @@ public class Timetable implements Serializable {
 
     @Override
     public String toString() {
-        return "pl.sylwekczmil.timetableserver.Timetable[ idTimetable=" + idTimetable + " ]";
+        return name;
     }
 
 }

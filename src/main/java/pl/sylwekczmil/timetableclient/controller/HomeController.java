@@ -1,23 +1,24 @@
 package pl.sylwekczmil.timetableclient.controller;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Control;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -25,8 +26,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -45,9 +46,8 @@ public class HomeController implements Initializable {
     private MainSceneChanger sceneChanger = MainSceneChanger.getInstance();
 
     private User currentUser;
-    private ObservableList<String> timetableNameList = FXCollections.observableArrayList();
-    private List<Timetable> timetableList = new ArrayList<Timetable>();
-    private String selectedTimetableName;
+    private ObservableList<Timetable> timetableList = FXCollections.observableArrayList();
+    private Timetable selectedTimetable;
 
     @FXML
     BorderPane borderPane;
@@ -63,36 +63,35 @@ public class HomeController implements Initializable {
         try {
             currentUser = userService.getCurrentUser();
             sceneChanger.getPrimaryStage().setTitle("Hello " + currentUser.getUsername() + "!");
-            timetableList = timetableService.getTimetablesByUserId(currentUser.getIdUser());
-            timetableList.forEach((Timetable t) -> timetableNameList.add(t.getName()));
+            timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));
+            timetableListView.setItems(timetableList);
 
-            timetableListView.setItems(timetableNameList);
-            timetableListView.getSelectionModel().select(0);
-            selectedTimetableName = timetableNameList.get(0);
-            timetableListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                selectedTimetableName = (String) newValue;
+            timetableList.addListener(new ListChangeListener<Timetable>() {
+                @Override
+                public void onChanged(ListChangeListener.Change<? extends Timetable> c) {
+                    System.out.println("zmiana");
+                }
             });
 
-            for (Node n : gridPane.getChildren()) {
-                if (n instanceof Control) {
-//                    Control control = (Control) n;
-//                    control.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-//                    control.setStyle("-fx-background-color: cornsilk; -fx-alignment: center;");
-                }
-                if (n instanceof Pane) {
-                    Pane pane = (Pane) n;
-                    pane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                    pane.setStyle("-fx-background-color: red;");
-                }
+            if (timetableList.size() > 0) {
+                timetableListView.getSelectionModel().select(0);
+                selectedTimetable = timetableList.get(0);
+                changeViewedTimetable(selectedTimetable);
             }
+            timetableListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                if (timetableList.size() > 0) {
+                    selectedTimetable = (Timetable) newValue;
+                    if(selectedTimetable!=null)changeViewedTimetable(selectedTimetable);
 
-            gridPane.add(new Label("Name: 1.1 "), 1, 1); //kolumna //wiersz
-            gridPane.add(new Label("Name: 1.1 "), 1, 1); //kolumna //wiersz  // jako pane bo nachodzi na siebie
-            gridPane.add(new Label("Name: 1.2"), 1, 2);
+                }
+            });
+            // }
 
         } catch (NotLoggedInException ex) {
             Alert alert = new Alert(AlertType.WARNING);
             alert.initStyle(StageStyle.UTILITY);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
             alert.setHeaderText("You are not logged in, or your token expired!");
             alert.showAndWait();
             sceneChanger.goToLogin();
@@ -127,8 +126,8 @@ public class HomeController implements Initializable {
 
         timetableName.textProperty().addListener((ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
             boolean exist = false;
-            for (String tName : timetableNameList) {
-                if (tName.equals(newValue)) {
+            for (Timetable t : timetableList) {
+                if (t.getName().equals(newValue)) {
                     exist = true;
                 }
             }
@@ -152,17 +151,28 @@ public class HomeController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(tName -> {
             try {
-                timetableService.addTimetable(new Timetable(tName, currentUser));
-                timetableNameList.add(tName);
+
+                Timetable newTimetable = new Timetable(tName, currentUser);
+                timetableService.addTimetable(newTimetable);
+                timetableList.add(newTimetable);
+                timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));
+                timetableListView.setItems(timetableList);
+                selectedTimetable = timetableList.get(timetableList.size() - 1);
+                timetableListView.getSelectionModel().select(timetableList.size() - 1);
+
             } catch (NotLoggedInException ex) {
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.initStyle(StageStyle.UTILITY);
+                Stage stage1 = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage1.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
                 alert.setHeaderText("You are not logged in, or your token expired!");
                 alert.showAndWait();
                 sceneChanger.goToLogin();
             } catch (NotModifiedException ex) {
 
                 Alert alert = new Alert(AlertType.WARNING);
+                Stage stage1 = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage1.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
                 alert.setHeaderText("Timetable was not created, server error!");
                 alert.showAndWait();
             }
@@ -170,29 +180,85 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    private void deleteTimetablle() {
-        if (timetableNameList.size() != 0) {
+    private void deleteTimetable() {
+        if (timetableList.size() != 0 && selectedTimetable != null) {
             try {
-                timetableService.removeTimetable(selectedTimetableName);
-                timetableNameList.remove(timetableNameList.indexOf(selectedTimetableName));
+                
+                timetableService.removeTimetable(selectedTimetable.getIdTimetable());
+                timetableList.remove(selectedTimetable);
+                
+                timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));
+                timetableListView.setItems(timetableList);
+                if (!timetableList.isEmpty()) {
+                    selectedTimetable = timetableList.get(0);
+                    timetableListView.getSelectionModel().select(0);
+                }
+
             } catch (NotLoggedInException ex) {
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.initStyle(StageStyle.UTILITY);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
                 alert.setHeaderText("You are not logged in, or your token expired!");
                 alert.showAndWait();
                 sceneChanger.goToLogin();
             } catch (NotModifiedException ex) {
 
                 Alert alert = new Alert(AlertType.WARNING);
+                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+                stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
                 alert.setHeaderText("Timetable was not deleted, server error!");
                 alert.showAndWait();
             }
         } else {
 
             Alert alert = new Alert(AlertType.WARNING);
+            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+            stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
             alert.setHeaderText("No timetable to delete!");
             alert.showAndWait();
 
         }
     }
+
+    @FXML
+    private void logoutButtonClicked() {
+        sceneChanger.goToLogin();
+    }
+
+    private void changeViewedTimetable(Timetable timetable) {
+
+        if (timetableList.size() > 0) {
+            System.out.println("" + timetable.getName());
+
+            for (Node n : gridPane.getChildren()) {
+//            if (n instanceof Control) {
+//                Control control = (Control) n;
+//                //clear if nee
+//                // control.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+//                //control.setStyle("-fx-background-color: cornsilk; -fx-alignment: center;");
+//            }
+                if (n instanceof FlowPane) {
+                    FlowPane pane = (FlowPane) n;
+                    ((FlowPane) n).getChildren().clear();
+                    pane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                    Button b = new Button("Add");
+                    b.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent event) {
+                            System.out.println(GridPane.getColumnIndex(n) + " " + GridPane.getRowIndex(n));
+                            pane.getChildren().remove(b);
+                        }
+                    });
+                    pane.getChildren().add(b);
+
+//                    if (GridPane.getColumnIndex(n).equals(GridPane.getRowIndex(n))) {
+//                        pane.getChildren().add(new Label("dsads"));
+//                    }
+                }
+            }
+
+        }
+    }
+
 }
