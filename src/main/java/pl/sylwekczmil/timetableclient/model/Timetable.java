@@ -1,39 +1,34 @@
 package pl.sylwekczmil.timetableclient.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.xml.bind.annotation.XmlRootElement;
+
 
 @XmlRootElement
 public class Timetable implements Serializable {
 
+  
     private Integer idTimetable;
+   
     private String name;
+   
     private int week;
+    
     private Collection<User> userCollection;
+    
+    private Collection<Event> eventCollection;
 
     public Timetable() {
-    }
-
-    public Timetable(Integer idTimetable) {
-        this.idTimetable = idTimetable;
-    }
-
-    public Timetable(Integer idTimetable, String name, int week) {
-        this.idTimetable = idTimetable;
+    }  
+    
+    public Timetable(String name, User user) {        
         this.name = name;
-        this.week = week;
+        this.week = 0;
+        userCollection = new ArrayList<User>();
+        userCollection.add(user);
     }
-
-    public Collection<User> getUserCollection() {
-        return userCollection;
-    }
-
-    public void setUserCollection(Collection<User> userCollection) {
-        this.userCollection = userCollection;
-    }
-    
-    
 
     public Integer getIdTimetable() {
         return idTimetable;
@@ -57,6 +52,22 @@ public class Timetable implements Serializable {
 
     public void setWeek(int week) {
         this.week = week;
+    }
+
+    public Collection<User> getUserCollection() {
+        return userCollection;
+    }
+
+    public void setUserCollection(Collection<User> userCollection) {
+        this.userCollection = userCollection;
+    }
+
+    public Collection<Event> getEventCollection() {
+        return eventCollection;
+    }
+
+    public void setEventCollection(Collection<Event> eventCollection) {
+        this.eventCollection = eventCollection;
     }
 
     @Override

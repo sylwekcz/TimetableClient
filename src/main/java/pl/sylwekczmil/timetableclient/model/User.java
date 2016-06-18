@@ -2,36 +2,35 @@
 package pl.sylwekczmil.timetableclient.model;
 
 import java.io.Serializable;
-import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 
 @XmlRootElement
 public class User implements Serializable {
+
   
     private Integer idUser;
-   
     private String username;
-    
     private String password;
-   
     private String token;
-    
-    private Date tokenExpirationDate;
 
     public User() {
-    }
-
-    public User(Integer idUser) {
-        this.idUser = idUser;
-    }
-
-    public User(Integer idUser, String username, String password) {
-        this.idUser = idUser;
+    }  
+    
+    public User(String username, String password) {
+        this.password = password;
         this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
     }
+    
+    
 
     public Integer getIdUser() {
         return idUser;
@@ -49,15 +48,6 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    @XmlTransient
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getToken() {
         return token;
     }
@@ -66,16 +56,8 @@ public class User implements Serializable {
         this.token = token;
     }
 
-    public Date getTokenExpirationDate() {
-        return tokenExpirationDate;
-    }
-
-    public void setTokenExpirationDate(Date tokenExpirationDate) {
-        this.tokenExpirationDate = tokenExpirationDate;
-    }
-
     
-
+    
     @Override
     public int hashCode() {
         int hash = 0;

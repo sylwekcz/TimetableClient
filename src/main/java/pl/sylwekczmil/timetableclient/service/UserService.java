@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 import pl.sylwekczmil.timetableclient.model.Credentials;
 import pl.sylwekczmil.timetableclient.model.User;
 import pl.sylwekczmil.timetableclient.service.exceptions.NotLoggedInException;
+import pl.sylwekczmil.timetableclient.service.exceptions.NotModifiedException;
 import pl.sylwekczmil.timetableclient.service.exceptions.WrongCredentialsException;
 
 public class UserService {
@@ -45,6 +46,16 @@ public class UserService {
         token = response.getEntity(String.class);
     }
 
+    public void addUser(User user) throws NotModifiedException{
+        ClientResponse response = resource
+                .path("user")
+                .type(MediaType.APPLICATION_XML)
+                .post(ClientResponse.class, user);
+        if (response.getStatus() != 201) {
+           throw new NotModifiedException();
+        }
+    }
+
     public User getCurrentUser() throws NotLoggedInException {
         if (currentUser == null) {
             ClientResponse response = resource
@@ -64,6 +75,7 @@ public class UserService {
             currentUser = response.getEntity(User.class);
             currentUser.setToken(token);
         }
+
         return currentUser;
     }
 

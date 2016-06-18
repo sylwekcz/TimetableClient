@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import pl.sylwekczmil.timetableclient.model.User;
+import pl.sylwekczmil.timetableclient.service.exceptions.NotModifiedException;
 
 /**
  *
@@ -38,35 +39,43 @@ public class UserServiceTest {
     }
 
     
-    @Test
-    public void testLogin() throws Exception {
-
-        System.out.println("login");
-        String username = "sylwek";
-        String password = "haslo123";
-        instance.login(username, password);
-    }
-
-   
-    @Test
-    public void testGetCurrentUser() throws Exception {
-
-        System.out.println("getCurrentUser");
-        testLogin();
-        User expResult = new User(1, "sylwek", null);
-        User result = instance.getCurrentUser();
-        assertEquals(expResult, result);
-    }
-
+//    @Test
+//    public void testLogin() throws Exception {
+//
+//        System.out.println("login");
+//        String username = "sylwek";
+//        String password = "haslo123";
+//        instance.login(username, password);
+//    }
+//
+//   
+//    @Test
+//    public void testGetCurrentUser() throws Exception {
+//
+//        System.out.println("getCurrentUser");
+//        testLogin();
+//        User expResult = new User(1, "sylwek", null);
+//        User result = instance.getCurrentUser();
+//        assertEquals(expResult, result);
+//    }
+//
+//    
+//    @Test
+//    public void testGetToken() throws Exception {
+//        
+//        System.out.println("getToken");
+//        String expResult = instance.getToken();
+//        testLogin();
+//        String result = instance.getToken();
+//        assertNotEquals(expResult, result);
+//    }
     
-    @Test
-    public void testGetToken() throws Exception {
-        
-        System.out.println("getToken");
-        String expResult = instance.getToken();
-        testLogin();
-        String result = instance.getToken();
-        assertNotEquals(expResult, result);
-    }
+//    @Test
+//    public void addUser(){
+//        User user = new User("sdfsfdaf","aaaaa");
+//        user.setIdUser(1);
+//        instance.addUser(user);
+//                
+//    }
 
 }
