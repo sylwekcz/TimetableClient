@@ -1,6 +1,7 @@
 package pl.sylwekczmil.timetableclient;
 
 import java.io.IOException;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -8,7 +9,7 @@ import javafx.stage.Stage;
 
 public class MainSceneChanger {
 
-    Scene currentScene;
+    
 
     private static MainSceneChanger instance = null;
 
@@ -25,8 +26,8 @@ public class MainSceneChanger {
     public void goToLogin() {
         try {
             Parent p = FXMLLoader.load(getClass().getResource("/fxml/Login.fxml"));
-            currentScene = new Scene(p);
-            changeScene();
+            Scene currentScene = new Scene(p);            
+            changeScene(currentScene);
         } catch (IOException e) {
         }
     }
@@ -34,8 +35,8 @@ public class MainSceneChanger {
     public void goToRegister() {
         try {
             Parent p = FXMLLoader.load(getClass().getResource("/fxml/Register.fxml"));
-            currentScene = new Scene(p);            
-            changeScene();
+            Scene currentScene = new Scene(p);            
+            changeScene(currentScene);
         } catch (IOException e) {
         }
     }
@@ -43,13 +44,14 @@ public class MainSceneChanger {
      public void goToHome() {
         try {
             Parent p = FXMLLoader.load(getClass().getResource("/fxml/Home.fxml"));
-            currentScene = new Scene(p);            
-            changeScene();
+            Scene currentScene = new Scene(p);            
+            changeScene(currentScene);
         } catch (IOException e) {
         }
     }
 
-    private void changeScene() {
+    private void changeScene(Scene currentScene) {
+        
         Stage appStage = getPrimaryStage();
         appStage.close();
         appStage.setScene(currentScene);

@@ -46,35 +46,34 @@ public class UserService {
         token = response.getEntity(String.class);
     }
 
-    public void addUser(User user) throws NotModifiedException{
+    public void addUser(User user) throws NotModifiedException {
         ClientResponse response = resource
                 .path("user")
                 .type(MediaType.APPLICATION_XML)
                 .post(ClientResponse.class, user);
         if (response.getStatus() != 201) {
-           throw new NotModifiedException();
+            throw new NotModifiedException();
         }
     }
 
     public User getCurrentUser() throws NotLoggedInException {
-        if (currentUser == null) {
-            ClientResponse response = resource
-                    .path("user")
-                    .path("current")
-                    .header("Authorization", token)
-                    .accept(MediaType.APPLICATION_XML)
-                    .get(ClientResponse.class);
 
-            if (response.getStatus() != 200) {
-                if (response.getStatus() == 401) {
-                    throw new NotLoggedInException();
-                } else {
-                    throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
-                }
+        ClientResponse response = resource
+                .path("user")
+                .path("current")
+                .header("Authorization", token)
+                .accept(MediaType.APPLICATION_XML)
+                .get(ClientResponse.class);
+
+        if (response.getStatus() != 200) {
+            if (response.getStatus() == 401) {
+                throw new NotLoggedInException();
+            } else {
+                throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
             }
-            currentUser = response.getEntity(User.class);
-            currentUser.setToken(token);
         }
+        currentUser = response.getEntity(User.class);
+        currentUser.setToken(token);
 
         return currentUser;
     }

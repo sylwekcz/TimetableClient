@@ -61,6 +61,8 @@ public class HomeController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
+            
+            System.out.println("Init HOME");
             currentUser = userService.getCurrentUser();
             sceneChanger.getPrimaryStage().setTitle("Hello " + currentUser.getUsername() + "!");
             timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));

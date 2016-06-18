@@ -31,8 +31,10 @@ public class RegisterController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        sceneChanger.getPrimaryStage().setTitle("Timetable!");
         txtUsername.setPromptText("Username");
         txtPassword.setPromptText("Password");
+        txtPassword2.setPromptText("Password confirmation");
     }
 
     @FXML
