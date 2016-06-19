@@ -1,18 +1,22 @@
 package pl.sylwekczmil.timetableclient.controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -23,15 +27,21 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pl.sylwekczmil.timetableclient.MainSceneChanger;
+import pl.sylwekczmil.timetableclient.model.Event;
 import pl.sylwekczmil.timetableclient.model.Timetable;
 import pl.sylwekczmil.timetableclient.model.User;
 import pl.sylwekczmil.timetableclient.service.EventService;
@@ -49,6 +59,7 @@ public class HomeController implements Initializable {
 
     private User currentUser;
     private ObservableList<Timetable> timetableList = FXCollections.observableArrayList();
+    private List<Event> eventList;
     private Timetable selectedTimetable;
 
     @FXML
@@ -63,13 +74,13 @@ public class HomeController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-            
+
             System.out.println("Init HOME");
             currentUser = userService.getCurrentUser();
             sceneChanger.getPrimaryStage().setTitle("Hello " + currentUser.getUsername() + "!");
             timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));
             timetableListView.setItems(timetableList);
-            
+
             if (timetableList.size() > 0) {
                 timetableListView.getSelectionModel().select(0);
                 selectedTimetable = timetableList.get(0);
@@ -78,20 +89,15 @@ public class HomeController implements Initializable {
             timetableListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 if (timetableList.size() > 0) {
                     selectedTimetable = (Timetable) newValue;
-                    if(selectedTimetable!=null)changeViewedTimetable(selectedTimetable);
+                    if (selectedTimetable != null) {
+                        changeViewedTimetable(selectedTimetable);
+                    }
 
                 }
             });
-            // }
 
         } catch (NotLoggedInException ex) {
-            Alert alert = new Alert(AlertType.WARNING);
-            alert.initStyle(StageStyle.UTILITY);
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
-            alert.setHeaderText("You are not logged in, or your token expired!");
-            alert.showAndWait();
-            sceneChanger.goToLogin();
+            handleNotLoggedException();
         }
 
     }
@@ -158,20 +164,9 @@ public class HomeController implements Initializable {
                 timetableListView.getSelectionModel().select(timetableList.size() - 1);
 
             } catch (NotLoggedInException ex) {
-                Alert alert = new Alert(AlertType.WARNING);
-                alert.initStyle(StageStyle.UTILITY);
-                Stage stage1 = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage1.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
-                alert.setHeaderText("You are not logged in, or your token expired!");
-                alert.showAndWait();
-                sceneChanger.goToLogin();
+                handleNotLoggedException();
             } catch (NotModifiedException ex) {
-
-                Alert alert = new Alert(AlertType.WARNING);
-                Stage stage1 = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage1.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
-                alert.setHeaderText("Timetable was not created, server error!");
-                alert.showAndWait();
+                handleNotModifiedException();
             }
         });
     }
@@ -180,32 +175,21 @@ public class HomeController implements Initializable {
     private void deleteTimetable() {
         if (timetableList.size() != 0 && selectedTimetable != null) {
             try {
-                
-                timetableService.removeTimetable(selectedTimetable.getIdTimetable());
-                timetableList.remove(selectedTimetable);
-                
+
+                timetableService.removeTimetable(selectedTimetable.getIdTimetable());                
                 timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));
                 timetableListView.setItems(timetableList);
-                if (!timetableList.isEmpty()) {
+                if (!timetableList.isEmpty()) {   
                     selectedTimetable = timetableList.get(0);
                     timetableListView.getSelectionModel().select(0);
+                } else {                      
+                    clearGridView();
                 }
 
             } catch (NotLoggedInException ex) {
-                Alert alert = new Alert(AlertType.WARNING);
-                alert.initStyle(StageStyle.UTILITY);
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
-                alert.setHeaderText("You are not logged in, or your token expired!");
-                alert.showAndWait();
-                sceneChanger.goToLogin();
+                handleNotLoggedException();
             } catch (NotModifiedException ex) {
-
-                Alert alert = new Alert(AlertType.WARNING);
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
-                alert.setHeaderText("Timetable was not deleted, server error!");
-                alert.showAndWait();
+                handleNotModifiedException();
             }
         } else {
 
@@ -225,37 +209,99 @@ public class HomeController implements Initializable {
 
     private void changeViewedTimetable(Timetable timetable) {
 
+        try {
+            eventList = eventService.getEventByTimetableId(timetable.getIdTimetable());
+            System.out.println(eventList);
+
+        } catch (NotLoggedInException ex) {
+            handleNotLoggedException();
+        }
+
         if (timetableList.size() > 0) {
             System.out.println("" + timetable.getName());
 
-            for (Node n : gridPane.getChildren()) {
-//            if (n instanceof Control) {
-//                Control control = (Control) n;
-//                //clear if nee
-//                // control.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-//                //control.setStyle("-fx-background-color: cornsilk; -fx-alignment: center;");
-//            }
-                if (n instanceof FlowPane) {
-                    FlowPane pane = (FlowPane) n;
-                    ((FlowPane) n).getChildren().clear();
+            for (Node n : gridPane.getChildren()) {//           
+                if (n instanceof AnchorPane) {
+                    AnchorPane pane = (AnchorPane) n;
+                    ((AnchorPane) n).getChildren().clear();
                     pane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                    Button b = new Button("Add");
-                    b.setOnAction(new EventHandler<ActionEvent>() {
-                        @Override
-                        public void handle(ActionEvent event) {
+                    Optional<Event> optionalEvent = eventList.stream()
+                            .filter(e -> (e.getDay() == GridPane.getColumnIndex(n) && e.getStart() == GridPane.getRowIndex(n)))
+                            .findAny();
+                    if (optionalEvent.isPresent()) {
+
+                        Label name = new Label(optionalEvent.get().getName());
+                        Label lecturer = new Label(optionalEvent.get().getLecturer());
+                        VBox p = new VBox();
+                        p.setPadding(new Insets(5, 5, 5, 5));
+                        p.setSpacing(5);
+                        p.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+                        TitledPane t1 = new TitledPane("Name", name);
+                        t1.setCollapsible(false);
+                        TitledPane t2 = new TitledPane("Lecturer", lecturer);
+                        t2.setCollapsible(false);
+                        Button b = new Button("Delete");
+                        b.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                        p.getChildren().add(t1);
+                        p.getChildren().add(t2);
+                        p.getChildren().add(b);
+
+                        b.setOnAction((ActionEvent event) -> {
+                            System.out.println(GridPane.getColumnIndex(n) + " " + GridPane.getRowIndex(n));
+                            //pane.getChildren().remove(b);
+                        });
+
+                        p.setMaxSize(pane.getWidth(), pane.getHeight());
+                        AnchorPane.setBottomAnchor(p, 0.0);
+                        AnchorPane.setTopAnchor(p, 0.0);
+                        AnchorPane.setLeftAnchor(p, 0.0);
+                        AnchorPane.setRightAnchor(p, 0.0);
+                        pane.getChildren().add(p);
+                    } 
+                        Button b = new Button("Add");
+                        b.setOnAction((ActionEvent event) -> {
                             System.out.println(GridPane.getColumnIndex(n) + " " + GridPane.getRowIndex(n));
                             pane.getChildren().remove(b);
-                        }
-                    });
-                    pane.getChildren().add(b);
-
-//                    if (GridPane.getColumnIndex(n).equals(GridPane.getRowIndex(n))) {
-//                        pane.getChildren().add(new Label("dsads"));
-//                    }
+                        });
+                        AnchorPane.setBottomAnchor(b, 0.0);
+                        AnchorPane.setTopAnchor(b, 0.0);
+                        AnchorPane.setLeftAnchor(b, 0.0);
+                        AnchorPane.setRightAnchor(b, 0.0);
+                        pane.getChildren().add(b);                    
                 }
             }
 
         }
+    }
+
+    private void clearGridView(){
+        for (Node n : gridPane.getChildren()) {//           
+                if (n instanceof AnchorPane) {
+                    AnchorPane pane = (AnchorPane) n;
+                    ((AnchorPane) n).getChildren().clear();
+                    pane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);                  
+                }
+            }
+    }
+    
+    private void handleNotLoggedException() {
+
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.initStyle(StageStyle.UTILITY);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
+        alert.setHeaderText("You are not logged in, or your token expired!");
+        alert.showAndWait();
+        sceneChanger.goToLogin();
+
+    }
+
+    private void handleNotModifiedException() {
+        Alert alert = new Alert(AlertType.WARNING);
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
+        alert.setHeaderText("Timetable was not deleted, server error!");
+        alert.showAndWait();
     }
 
 }

@@ -39,28 +39,28 @@ public class TimetableServiceTest {
     /**
      * Test of getTimetablesByUserId method, of class TimetableService.
      */
-    @org.junit.Test
-    public void testGetTimetablesByUserId() throws NotLoggedInException, WrongCredentialsException {
+//    @org.junit.Test
+//    public void testGetTimetablesByUserId() throws NotLoggedInException, WrongCredentialsException {
 //        us.login("sylwek","haslo123");
 //        System.out.println("getTimetablesByUserId");
 //        Integer userId = 1;
 //        List<Timetable> expResult = new ArrayList<Timetable>();
 //        List<Timetable> result = instance.getTimetablesByUserId(userId);
 //        assertNotEquals(expResult, result);
-    }
+//    }
    
-    @org.junit.Test
-    public void testAddTimetable() throws NotLoggedInException, WrongCredentialsException, NotModifiedException {
-       
+//    @org.junit.Test
+//    public void testAddTimetable() throws NotLoggedInException, WrongCredentialsException, NotModifiedException {
+//       
 //      
 //       us.login("sylwek","haslo123");
 //       Timetable timetable = new Timetable("Nowe32",us.getCurrentUser());
 //       instance.addTimetable(timetable);
-    }
-    @org.junit.Test
-    public void removeTimetable() throws NotLoggedInException, NotModifiedException, WrongCredentialsException {
+//    }
+//    @org.junit.Test
+//    public void removeTimetable() throws NotLoggedInException, NotModifiedException, WrongCredentialsException {
 //         us.login("sylwek","haslo123");
 //        instance.removeTimetable("sdasd");
-    }
+//    }
 
 }

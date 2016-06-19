@@ -23,29 +23,26 @@ import pl.sylwekczmil.timetableclient.service.exceptions.NotModifiedException;
  * @author bzyk4
  */
 public class EventServiceTest {
-    
+
     public EventServiceTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
 
-   
-
-   
 //    @Test
 //    public void testGetEventByTimetableId() throws Exception {       
 //        Integer timetableId = 78;
@@ -54,7 +51,6 @@ public class EventServiceTest {
 //        List<Event> result = instance.getEventByTimetableId(timetableId);
 //        assertEquals(expResult, result);
 //    }
-
     /**
      * Test of addEvent method, of class EventService.
      */
@@ -63,9 +59,11 @@ public class EventServiceTest {
 //        System.out.println("addEvent");
 //        TimetableService ts = TimetableService.getInstance();
 //        List<Timetable> lt = ts.getTimetablesByUserId(1);
-//        Event event = new Event("neew",  "kwewtos",  1,  2,  1, lt.get(0));
-//        EventService instance = EventService.getInstance();
-//        instance.addEvent(event);
+//        for (int i = 1; i < 6; i++) {
+//            Event event = new Event("new"+i, "ktos"+i, i, i+1, i, lt.get(0));
+//            EventService instance = EventService.getInstance();
+//            instance.addEvent(event);
+//        }
 //    }
 
     /**
@@ -78,5 +76,4 @@ public class EventServiceTest {
 //        EventService instance =  EventService.getInstance();;
 //        instance.removeEvent(eventId);
 //    }
-    
 }
