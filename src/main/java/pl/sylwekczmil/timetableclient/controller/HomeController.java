@@ -34,6 +34,7 @@ import javafx.stage.StageStyle;
 import pl.sylwekczmil.timetableclient.MainSceneChanger;
 import pl.sylwekczmil.timetableclient.model.Timetable;
 import pl.sylwekczmil.timetableclient.model.User;
+import pl.sylwekczmil.timetableclient.service.EventService;
 import pl.sylwekczmil.timetableclient.service.TimetableService;
 import pl.sylwekczmil.timetableclient.service.UserService;
 import pl.sylwekczmil.timetableclient.service.exceptions.NotLoggedInException;
@@ -43,6 +44,7 @@ public class HomeController implements Initializable {
 
     private UserService userService = UserService.getInstance();
     private TimetableService timetableService = TimetableService.getInstance();
+    private EventService eventService = EventService.getInstance();
     private MainSceneChanger sceneChanger = MainSceneChanger.getInstance();
 
     private User currentUser;
@@ -67,14 +69,7 @@ public class HomeController implements Initializable {
             sceneChanger.getPrimaryStage().setTitle("Hello " + currentUser.getUsername() + "!");
             timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));
             timetableListView.setItems(timetableList);
-
-            timetableList.addListener(new ListChangeListener<Timetable>() {
-                @Override
-                public void onChanged(ListChangeListener.Change<? extends Timetable> c) {
-                    System.out.println("zmiana");
-                }
-            });
-
+            
             if (timetableList.size() > 0) {
                 timetableListView.getSelectionModel().select(0);
                 selectedTimetable = timetableList.get(0);
