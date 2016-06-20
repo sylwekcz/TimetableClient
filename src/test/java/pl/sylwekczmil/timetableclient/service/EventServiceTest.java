@@ -60,7 +60,7 @@ public class EventServiceTest {
 //        TimetableService ts = TimetableService.getInstance();
 //        List<Timetable> lt = ts.getTimetablesByUserId(1);
 //        for (int i = 1; i < 6; i++) {
-//            Event event = new Event("new"+i, "ktos"+i, i, i+1, i, lt.get(0));
+//            Event event = new Event("new"+i, "ktos"+i, i, i+1, i, lt.get(0),"B10"+i);
 //            EventService instance = EventService.getInstance();
 //            instance.addEvent(event);
 //        }

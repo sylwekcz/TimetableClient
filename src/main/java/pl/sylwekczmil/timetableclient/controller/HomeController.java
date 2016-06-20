@@ -6,17 +6,14 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -32,8 +29,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -166,7 +161,7 @@ public class HomeController implements Initializable {
             } catch (NotLoggedInException ex) {
                 handleNotLoggedException();
             } catch (NotModifiedException ex) {
-                handleNotModifiedException();
+                handleNotModifiedException("Timetable was not created, server error!");
             }
         });
     }
@@ -176,29 +171,23 @@ public class HomeController implements Initializable {
         if (timetableList.size() != 0 && selectedTimetable != null) {
             try {
 
-                timetableService.removeTimetable(selectedTimetable.getIdTimetable());                
+                timetableService.removeTimetable(selectedTimetable.getIdTimetable());
                 timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));
                 timetableListView.setItems(timetableList);
-                if (!timetableList.isEmpty()) {   
+                if (!timetableList.isEmpty()) {
                     selectedTimetable = timetableList.get(0);
                     timetableListView.getSelectionModel().select(0);
-                } else {                      
+                } else {
                     clearGridView();
                 }
 
             } catch (NotLoggedInException ex) {
                 handleNotLoggedException();
             } catch (NotModifiedException ex) {
-                handleNotModifiedException();
+                handleNotModifiedException("Timetable was not deleted, server error!");
             }
         } else {
-
-            Alert alert = new Alert(AlertType.WARNING);
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
-            alert.setHeaderText("No timetable to delete!");
-            alert.showAndWait();
-
+            createSimpleAlert("No timetable to delete!");
         }
     }
 
@@ -229,79 +218,131 @@ public class HomeController implements Initializable {
                             .filter(e -> (e.getDay() == GridPane.getColumnIndex(n) && e.getStart() == GridPane.getRowIndex(n)))
                             .findAny();
                     if (optionalEvent.isPresent()) {
-
-                        Label name = new Label(optionalEvent.get().getName());
-                        Label lecturer = new Label(optionalEvent.get().getLecturer());
-                        VBox p = new VBox();
-                        p.setPadding(new Insets(5, 5, 5, 5));
-                        p.setSpacing(5);
-                        p.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
-                        TitledPane t1 = new TitledPane("Name", name);
-                        t1.setCollapsible(false);
-                        TitledPane t2 = new TitledPane("Lecturer", lecturer);
-                        t2.setCollapsible(false);
-                        Button b = new Button("Delete");
-                        b.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                        p.getChildren().add(t1);
-                        p.getChildren().add(t2);
-                        p.getChildren().add(b);
-
-                        b.setOnAction((ActionEvent event) -> {
-                            System.out.println(GridPane.getColumnIndex(n) + " " + GridPane.getRowIndex(n));
-                            //pane.getChildren().remove(b);
-                        });
-
-                        p.setMaxSize(pane.getWidth(), pane.getHeight());
-                        AnchorPane.setBottomAnchor(p, 0.0);
-                        AnchorPane.setTopAnchor(p, 0.0);
-                        AnchorPane.setLeftAnchor(p, 0.0);
-                        AnchorPane.setRightAnchor(p, 0.0);
-                        pane.getChildren().add(p);
-                    } 
-                        Button b = new Button("Add");
-                        b.setOnAction((ActionEvent event) -> {
-                            System.out.println(GridPane.getColumnIndex(n) + " " + GridPane.getRowIndex(n));
-                            pane.getChildren().remove(b);
-                        });
-                        AnchorPane.setBottomAnchor(b, 0.0);
-                        AnchorPane.setTopAnchor(b, 0.0);
-                        AnchorPane.setLeftAnchor(b, 0.0);
-                        AnchorPane.setRightAnchor(b, 0.0);
-                        pane.getChildren().add(b);                    
+                        createEventView(pane, optionalEvent.get());
+                    } else {
+                        createAddEventView(pane);
+                    }
                 }
             }
 
         }
     }
 
-    private void clearGridView(){
-        for (Node n : gridPane.getChildren()) {//           
-                if (n instanceof AnchorPane) {
-                    AnchorPane pane = (AnchorPane) n;
-                    ((AnchorPane) n).getChildren().clear();
-                    pane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);                  
-                }
+    private void createEventView(AnchorPane pane, Event currentEvent) {
+        Label name = new Label(currentEvent.getName());
+        Label lecturer = new Label(currentEvent.getLecturer() + " (" + currentEvent.getRoom() + ")");
+        VBox p = new VBox();
+        p.setPadding(new Insets(5, 5, 5, 5));
+        p.setSpacing(5);
+        p.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+        TitledPane t1 = new TitledPane("Name", name);
+        t1.setCollapsible(false);
+        TitledPane t2 = new TitledPane("Lecturer (Room)", lecturer);
+        t2.setCollapsible(false);
+        Button b = new Button("Delete");
+        b.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        p.getChildren().add(t1);
+        p.getChildren().add(t2);
+        p.getChildren().add(b);
+        p.setMaxSize(pane.getWidth(), pane.getHeight());
+        AnchorPane.setBottomAnchor(p, 0.0);
+        AnchorPane.setTopAnchor(p, 0.0);
+        AnchorPane.setLeftAnchor(p, 0.0);
+        AnchorPane.setRightAnchor(p, 0.0);
+        b.setOnAction((ActionEvent event) -> {
+            try {
+                eventService.removeEvent(currentEvent.getIdEvent());
+                pane.getChildren().remove(p);
+                createAddEventView(pane);
+            } catch (NotLoggedInException ex) {
+                handleNotLoggedException();
+            } catch (NotModifiedException ex) {
+                handleNotModifiedException("Event was not deleted, server error!");
             }
+        });
+        pane.getChildren().add(p);
     }
-    
+
+    private void createAddEventView(AnchorPane pane) {
+
+        Button b = new Button("Add");
+        b.setOnAction((ActionEvent event) -> {
+            System.out.println("Add btn");
+            pane.getChildren().remove(b);
+            VBox pp = new VBox();
+            pp.setPadding(new Insets(5, 5, 5, 5));
+            pp.setSpacing(5);
+            pp.setMaxSize(Region.USE_COMPUTED_SIZE, Region.USE_COMPUTED_SIZE);
+            TextField txt1 = new TextField();
+            TextField txt2 = new TextField();
+            TextField txt3 = new TextField();
+            txt1.setPromptText("Name");
+            txt2.setPromptText("Lecturer");
+            txt3.setPromptText("Room");
+            Button bu = new Button("Confirm");
+            bu.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            pp.getChildren().add(txt1);
+            pp.getChildren().add(txt2);
+            pp.getChildren().add(txt3);
+            pp.getChildren().add(bu);
+            pp.setMaxSize(pane.getWidth(), pane.getHeight());
+            AnchorPane.setBottomAnchor(pp, 0.0);
+            AnchorPane.setTopAnchor(pp, 0.0);
+            AnchorPane.setLeftAnchor(pp, 0.0);
+            AnchorPane.setRightAnchor(pp, 0.0);
+            bu.setOnAction((ActionEvent e) -> {
+                if (!txt1.getText().equals("") && !txt2.getText().equals("") && !txt3.getText().equals("")) {
+                    Event newEvent = new Event(txt1.getText(), txt2.getText(),
+                            GridPane.getRowIndex(pane), GridPane.getRowIndex(pane) + 1,
+                            GridPane.getColumnIndex(pane), selectedTimetable, txt3.getText());
+                    try {
+                        eventService.addEvent(newEvent);
+                         pane.getChildren().remove(pp);
+                    createEventView(pane, newEvent);
+                    } catch (NotLoggedInException ex) {
+                        handleNotLoggedException();
+                    } catch (NotModifiedException ex) {
+                        handleNotModifiedException("Event was not created, server error!");
+                    }                   
+                } else {
+                    createSimpleAlert("All fields must contain data!");
+                }
+            });
+            pane.getChildren().add(pp);
+
+        });
+        AnchorPane.setBottomAnchor(b, 35.0);
+        AnchorPane.setTopAnchor(b, 35.0);
+        AnchorPane.setLeftAnchor(b, 20.0);
+        AnchorPane.setRightAnchor(b, 20.0);
+        pane.getChildren().add(b);
+    }
+
+    private void clearGridView() {
+        for (Node n : gridPane.getChildren()) {//           
+            if (n instanceof AnchorPane) {
+                AnchorPane pane = (AnchorPane) n;
+                ((AnchorPane) n).getChildren().clear();
+                pane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+            }
+        }
+    }
+
     private void handleNotLoggedException() {
-
-        Alert alert = new Alert(AlertType.WARNING);
-        alert.initStyle(StageStyle.UTILITY);
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
-        alert.setHeaderText("You are not logged in, or your token expired!");
-        alert.showAndWait();
+        createSimpleAlert("You are not logged in, or your token expired!");
         sceneChanger.goToLogin();
-
     }
 
-    private void handleNotModifiedException() {
+    private void handleNotModifiedException(String msg) {
+        createSimpleAlert(msg);  
+    }
+
+    private void createSimpleAlert(String msg) {
         Alert alert = new Alert(AlertType.WARNING);
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image(getClass().getResource("/icon/calendar.png").toExternalForm()));
-        alert.setHeaderText("Timetable was not deleted, server error!");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
         alert.showAndWait();
     }
-
 }

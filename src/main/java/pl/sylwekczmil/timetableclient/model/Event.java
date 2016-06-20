@@ -16,19 +16,21 @@ public class Event implements Serializable {
     private int end;
     private int day;
     private Timetable idTimetable;
+    private String room;
 
    
    
     public Event() {
     }
 
-    public Event(String name, String lecturer, int start, int end, int day, Timetable idTimetable) {
+    public Event(String name, String lecturer, int start, int end, int day, Timetable idTimetable, String room) {
         this.name = name;
         this.lecturer = lecturer;
         this.start = start;
         this.end = end;
         this.day = day;
         this.idTimetable = idTimetable;
+        this.room = room;
     }
 
    
@@ -91,8 +93,13 @@ public class Event implements Serializable {
         this.idTimetable = idTimetable;
     }
 
-    
-    
+    public String getRoom() {
+        return room;
+    }
+
+    public void setRoom(String room) {
+        this.room = room;
+    }      
    
     @Override
     public int hashCode() {
