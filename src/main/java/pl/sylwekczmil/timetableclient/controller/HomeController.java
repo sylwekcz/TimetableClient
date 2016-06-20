@@ -4,8 +4,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -34,7 +32,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import pl.sylwekczmil.timetableclient.MainSceneChanger;
 import pl.sylwekczmil.timetableclient.model.Event;
 import pl.sylwekczmil.timetableclient.model.Timetable;
@@ -70,7 +67,6 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         try {
 
-            System.out.println("Init HOME");
             currentUser = userService.getCurrentUser();
             sceneChanger.getPrimaryStage().setTitle("Hello " + currentUser.getUsername() + "!");
             timetableList = FXCollections.observableArrayList(timetableService.getTimetablesByUserId(currentUser.getIdUser()));
@@ -200,14 +196,12 @@ public class HomeController implements Initializable {
 
         try {
             eventList = eventService.getEventByTimetableId(timetable.getIdTimetable());
-            System.out.println(eventList);
 
         } catch (NotLoggedInException ex) {
             handleNotLoggedException();
         }
 
         if (timetableList.size() > 0) {
-            System.out.println("" + timetable.getName());
 
             for (Node n : gridPane.getChildren()) {//           
                 if (n instanceof AnchorPane) {
@@ -267,7 +261,6 @@ public class HomeController implements Initializable {
 
         Button b = new Button("Add");
         b.setOnAction((ActionEvent event) -> {
-            System.out.println("Add btn");
             pane.getChildren().remove(b);
             VBox pp = new VBox();
             pp.setPadding(new Insets(5, 5, 5, 5));

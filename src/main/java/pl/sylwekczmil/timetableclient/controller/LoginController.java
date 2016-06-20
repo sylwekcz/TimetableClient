@@ -51,10 +51,8 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        txtUsername.setText("sylwek");
-        txtPassword.setText("haslo123");
+       
         sceneChanger.getPrimaryStage().setTitle("Timetable!");
-        System.out.println("Init LOGIN");
         txtUsername.setPromptText("Username");
         txtPassword.setPromptText("Password");
 
